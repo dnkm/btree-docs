@@ -1,0 +1,23 @@
+{
+  "customFileOrder.rules": {
+    "/Users/dnkm/dev/btree/btree-docs/web-1-static-web": {
+      "order": [
+        "topic 01 - intro (1) (1).md",
+        "topic 01 - intro (1).md",
+        "topic 01 - intro.md",
+        "topic 02 - div.md",
+        "topic 03 - typography.md",
+        "topic 04 - colors.md",
+        "topic 05 - borders.md",
+        "topic 06 - backgrounds.md",
+        "topic 07 - spacing.md",
+        "topic 08 - basic-layout.md",
+        "topic 09 - positioning.md",
+        "topic 10 - flexbox.md",
+        "topic 11 - grid.md",
+        "topic 12 - effects-and-colors.md"
+      ],
+      "type": "manual"
+    }
+  }
+}
