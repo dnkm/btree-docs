@@ -1,38 +1,16 @@
 # codeblocks
 
-code section on markdown files should add livecodes directive next to it.
-For example
+markdown on the tutorials will have special code blocks that shows code and its output. For that, code section must follow the following format:
 
-```python
-print(1)
+```python static
+for i in range(2):
+    print(i)
+---
+0
+1
 ```
 
-should be
+The "static" meta will trigger a special code block that shows code and its output. The output and the code are split by the "---" line.
 
-```python livecodes height=20lh
-print(1)
-```
-
-calculate height based on the number of lines in the code block and cap it at 50lh. Also take into account the expected output of the code block. Always add about 1 or 2lh more to the height to account for the header and footer.
-
-# Task
-
-At the bottom of each page, add a task/exercise for the reader to do. The task should be related to the content of the page and should be challenging but not too hard. The task should be self-contained and should not require any external resources.
-
-use "mode=codeblock" to indicate that the task should be a code block.
-
-For example:
-
-## 🚀 Your Turn!
-
-Use the editor on the right to complete this challenge!
-
-1. Copy the code below into the editor.
-2. Change `_____` to your name.
-3. Click **Run** to see your code.
-4. Click **Submit** when you're done!
-
-```html livecodes mode=codeblock height=4lh
-<h1>Hello, World!</h1>
-<p>My name is _____ and I'm learning HTML!</p>
-```
+In generating tutorials, always use the "static" meta for code blocks. 요새 아이들이 좋아하는 재미있는 스타일의 강좌들을 써줘. 그렇지만 유머는 너무 과하지는 않게 적절하게 해주고, 전체적으로 재미를 느끼도록 너무 길고 지루한 설명보다는 짧게 핵심위주로 설명해줘. (물론 필요하면 괜찮아)
+ai 가 쓴것처럼 너무 획일적이지 않도록 해주고!
