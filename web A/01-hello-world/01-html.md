@@ -19,9 +19,9 @@ Let's look at two very common tags:
 
 ### Example
 
-The following code is editable! Change "[Name]" to your actual name and see what happens.
+The following code is editable! Change "[Name]" to your actual name and hit "run" to see what happens.
 
-```html iframe height=10lh showEditor
+```html iframe height=6lh showEditor
 <h1>Hello World</h1>
 <p>My name is [Name] and I am learning to code!</p>
 ```

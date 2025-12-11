@@ -1,20 +1,21 @@
-# Quiz: CSS Basics
+# Exercise: Styling Text
 
-Let's check what you learned about styling.
+Time to add some color to your page!
 
-1. What does CSS stand for?
+## Goal
 
-   - [ ] Creative Style Sheets
-   - [x] Cascading Style Sheets
-   - [ ] Computer Style System
+Style a heading and a paragraph using inline styles.
 
-2. Which property changes the text color?
+## Instructions
 
-   - [ ] `text-color`
-   - [x] `color`
-   - [ ] `font-color`
+1. Create an `<h1>` that says "Colorful World".
+2. Make the `<h1>` text color `blue`.
+3. Create a `<p>` that says "Big and Red".
+4. Make the `<p>` text color `red` and font size `24px`.
 
-3. How would you make text blue?
-   - [ ] `style="blue: color;"`
-   - [x] `style="color: blue;"`
-   - [ ] `color="blue"`
+## Desired Outcome
+
+```html iframe height=10lh
+<h1 style="color: blue;">Colorful World</h1>
+<p style="color: red; font-size: 24px;">Big and Red</p>
+```

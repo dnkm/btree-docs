@@ -1,18 +1,19 @@
-# Quiz: JavaScript Basics
+# Exercise: Making it Interactive
 
-1. What tag do we use for JavaScript?
+Let's make a button that reacts when you click it!
 
-   - [ ] `<js>`
-   - [ ] `<javascript>`
-   - [x] `<script>`
+## Goal
 
-2. How do you create a popup message?
+Create a button that triggers an alert.
 
-   - [ ] `popup("Msg")`
-   - [x] `alert("Msg")`
-   - [ ] `msg("Msg")`
+## Instructions
 
-3. What happens if you do `document.body.innerHTML = "Hi"`?
-   - [ ] It adds "Hi" to the bottom.
-   - [x] It replaces everything in the body with "Hi".
-   - [ ] It does nothing.
+1. Create a `<button>` element.
+2. Set the button text to "Click Me".
+3. Add an `onclick` attribute that triggers an `alert` with the message "Button Clicked!".
+
+## Desired Outcome
+
+```html iframe height=10lh
+<button onclick="alert('Button Clicked!')">Click Me</button>
+```

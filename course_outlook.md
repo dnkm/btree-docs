@@ -25,17 +25,23 @@ An example would be
 1. Project A (Style first then functionality)
 
 - First build the skeleton
-- Then add the content
-- Then add the styling (teach some and then provide a quiz)
-- Then add the interactivity (teach some and then provide a quiz)
+- Then add HTML content
+- Add more HTML Content (it's an exercise, so tell students what to build but do not provide code)
+- Then add the styling
+- Add more styling (it's an exercise, so tell students what to build but do not provide code)
+- Then add the interactivity
+- Add more interactivity (it's an exercise, so tell students what to build but do not provide code)
 - Then add the final touches
 
 2. Project B (Functionality first then style)
 
 - First build the skeleton
 - Then add the content
+- Add more content (it's an exercise, so tell students what to build but do not provide code)
 - Then add the interactivity
+- Add more interactivity (it's an exercise, so tell students what to build but do not provide code)
 - Then add the styling
+- Add more styling (it's an exercise, so tell students what to build but do not provide code)
 - Repeat as we build the project by adding more features
 - Then add the final touches
 
