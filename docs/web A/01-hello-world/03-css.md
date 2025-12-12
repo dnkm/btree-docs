@@ -1,3 +1,9 @@
+---
+doc_id: k57apmccjzb0nsxhy8xz302e757x5h0d
+title: CSS
+gradingType: read
+---
+
 # CSS - The Style
 
 Now that we have our skeleton, let's make it look good!
