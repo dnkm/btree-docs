@@ -1,3 +1,9 @@
+---
+doc_id: k57f4yff0q541s6xxf09evxas97x4ns2
+title: JavaScript
+gradingType: read
+---
+
 # JavaScript - The Brains
 
 HTML is the structure, CSS is the style, and **JavaScript** is the logic (or brains).
@@ -31,9 +37,18 @@ Let's try a popup message (alert).
 
 ```html iframe height=10lh showEditor
 <button onclick="alert('Hello!')">Click me</button>
+```
 
-<script>
-  // You can also run code immediately:
-  // alert("Welcome to my website!");
-</script>
+Using `onclick`, we can make the code run when the user interacts with the button, rather than automatically.
+
+### Example
+
+Let's combine the two and make the content change upon clicking the button
+
+```html iframe height=10lh showEditor
+<h1>Older Text</h1>
+
+<button onclick="document.body.innerHTML = '<h1>Hello from JavaScript!</h1>'">
+  Click me
+</button>
 ```

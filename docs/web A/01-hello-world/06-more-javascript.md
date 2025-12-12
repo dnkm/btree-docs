@@ -1,3 +1,8 @@
+---
+doc_id: k57c8xd87e7pzm6m7ypbpswa757x55mv
+gradingType: livecodes
+---
+
 # Exercise: Making it Interactive
 
 Let's make a button that reacts when you click it!

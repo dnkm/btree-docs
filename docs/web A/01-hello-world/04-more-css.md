@@ -1,3 +1,8 @@
+---
+doc_id: k57armkm94sj42h6z2sxz22bdh7x44c6
+gradingType: livecodes
+---
+
 # Exercise: Styling Text
 
 Time to add some color to your page!
