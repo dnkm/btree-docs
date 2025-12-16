@@ -8,10 +8,41 @@ const CONVEX_URL =
     ? process.env.CONVEX_URL_PROD!
     : process.env.CONVEX_URL_DEV!;
 
-console.log(CONVEX_URL);
+const convex = new ConvexHttpClient(CONVEX_URL);
 
-// const convex = new ConvexHttpClient(
-//   process.env.CONVEX_ENV === "PROD"
-//     ? process.env.CONVEX_URL_PROD!
-//     : process.env.CONVEX_URL_DEV!
-// );
+// start
+const tableName = process.argv[3];
+if (!tableName) {
+  console.error("Please provide a table name as the third argument.");
+  process.exit(1);
+}
+switch (tableName) {
+  case "courses":
+    loadCourses();
+    break;
+  default:
+    console.error(`Unknown table name: ${tableName}`);
+    process.exit(1);
+}
+
+///////////////
+async function loadCourses() {
+  // load courses and create folders in /docs in the form of /docs/course-name-course_ID
+  const courses = await convex.query(api.courses.list);
+  const docsPath = path.join(process.cwd(), "docs");
+  for (const course of courses) {
+    const courseFolderName = `${course.slug}-${course._id}`;
+    const courseFolderPath = path.join(docsPath, courseFolderName);
+    if (!fs.existsSync(courseFolderPath)) {
+      fs.mkdirSync(courseFolderPath);
+      console.log(`Created folder: ${courseFolderPath}`);
+    } else {
+      console.log(`Folder already exists: ${courseFolderPath}`);
+    }
+  }
+}
+
+// async function loadTopics({courseName}:{courseName:string}) {
+//   // load topics for a given course and create markdown files in the respective course folder
+//   const course = await convex.query(api.courses., { name: courseName });
+// }
