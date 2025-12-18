@@ -8,10 +8,11 @@ const CONVEX_URL =
     ? process.env.CONVEX_URL_PROD!
     : process.env.CONVEX_URL_DEV!;
 
+console.log("url", CONVEX_URL, process.argv);
 const convex = new ConvexHttpClient(CONVEX_URL);
 
 // start
-const tableName = process.argv[3];
+const tableName = process.argv[2];
 if (!tableName) {
   console.error("Please provide a table name as the third argument.");
   process.exit(1);
@@ -35,9 +36,9 @@ async function loadCourses() {
     const courseFolderPath = path.join(docsPath, courseFolderName);
     if (!fs.existsSync(courseFolderPath)) {
       fs.mkdirSync(courseFolderPath);
-      console.log(`Created folder: ${courseFolderPath}`);
+      console.log(`Created folder: ${courseFolderName}`);
     } else {
-      console.log(`Folder already exists: ${courseFolderPath}`);
+      console.log(`Folder already exists: ${courseFolderName}`);
     }
   }
 }

@@ -5,20 +5,22 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "sync": "ts-node -r dotenv/config ./src/sync.ts dotenv_config_path=.env.local"
+    "sync": "node --env-file=.env.local -r ts-node/register ./src/sync.ts",
+    "watch": "nodemon --watch src/watcher.ts --exec \"node --env-file=.env.local -r ts-node/register ./src/watcher.ts\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.24.0",
   "dependencies": {
+    "@parcel/watcher": "^2.5.1",
     "convex": "^1.31.0",
     "node-fetch": "^3.3.2",
     "react": "^19.2.3"
   },
   "devDependencies": {
     "@types/node": "^22.9.4",
-    "dotenv": "^17.2.3",
+    "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "vite": "^7.3.0"

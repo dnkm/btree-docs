@@ -1,21 +1,20 @@
-/// <reference types="node" />
-
 import fs from "fs";
 import path from "path";
+import type { Event } from "@parcel/watcher";
+import { subscribe } from "@parcel/watcher";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convexApi.ts";
 
-// const TARGET_URL_DEV =
-//   "https://rugged-mongoose-414.convex.site/update-markdown-content";
-// const TARGET_URL_PROD =
-//   "https://glad-walrus-291.convex.site/update-markdown-content";
-// const TAREGET_URL = TARGET_URL_DEV; // Change to DEV or PROD as needed
-
-const WATCH_DIR = "./docs";
+const CONVEX_URL =
+  process.env.CONVEX_ENV === "PROD"
+    ? process.env.CONVEX_URL_PROD!
+    : process.env.CONVEX_URL_DEV!;
+const WATCH_DIR = process.env.CONVEX_ENV === "PROD" ? "./docs" : "./docs-dev";
 
 type FrontMatterData = Record<string, string>;
 
-const convex = new ConvexHttpClient("https://glad-walrus-291.convex.cloud");
+const convex = new ConvexHttpClient(CONVEX_URL);
+const isFixing = false;
 
 // Parse YAML-style front matter
 function parseMarkdown(fileContent: string): {
@@ -56,42 +55,110 @@ type UpdatePayload = {
   metadata: FrontMatterData;
 };
 
+type PathType = "course" | "topic" | "problem" | "unknown";
+
+function getPathType(filePath: string): PathType {
+  const relativePath = path.relative(WATCH_DIR, filePath);
+  const parts = relativePath.split(path.sep);
+
+  if (parts.length === 1 && !filePath.endsWith(".md")) {
+    return "course";
+  }
+
+  if (parts.length === 2 && !filePath.endsWith(".md")) {
+    return "topic";
+  }
+
+  if (parts.length === 3 && filePath.endsWith(".md")) {
+    return "problem";
+  }
+
+  return "unknown";
+}
+
 async function notifyServer(payload: UpdatePayload) {
   const courses = await convex.query(api.courses.list);
   console.log("Received update payload", payload);
   console.log("Fetched courses", courses);
 }
 
-fs.watch(
+console.log(`Watching directory: ${WATCH_DIR}`);
+
+subscribe(
   WATCH_DIR,
-  { recursive: true, encoding: "utf8" },
-  (_event: fs.WatchEventType, filename: string | null) => {
-    if (!filename || !filename.endsWith(".md")) return;
+  (error: Error | null, events: Event[]) => {
+    if (isFixing) return;
+    if (error) {
+      console.error("Watcher error:", error);
+      return;
+    }
 
-    const filePath = path.join(WATCH_DIR, filename);
+    if (
+      events.length === 2 &&
+      events.some((e) => e.type === "delete") &&
+      events.some((e) => e.type === "create")
+    ) {
+      // if 'delete' and 'create' happens in the same batch, consider it as 'rename'
+      const deleteEvent = events.find((e) => e.type === "delete")!;
+      const createEvent = events.find((e) => e.type === "create")!;
+      const oldPath = deleteEvent.path;
+      const newPath = createEvent.path;
 
-    setTimeout(() => {
-      fs.readFile(
-        filePath,
-        "utf8",
-        (err: NodeJS.ErrnoException | null, data: string) => {
-          if (err) return console.error("Read error:", err.message);
+      console.log("rename event detected:", oldPath, "→", newPath);
+      return;
+    } else if (events.length > 1) {
+      console.error(`UNKNOWN Batch of ${events.length} events detected.`);
+      for (const event of events) {
+        console.error(`- ${event.type}: ${event.path}`);
+      }
+      return;
+    }
 
-          try {
-            const { id, content, data: metadata } = parseMarkdown(data);
-            console.log(`[UPDATED] ${filename} → Sending update…`);
-            void notifyServer({ id, content, metadata });
-          } catch (e) {
-            if (e instanceof Error) {
-              console.error(`Error parsing ${filename}:`, e.message);
-            } else {
-              console.error(`Unknown error parsing ${filename}:`, e);
+    for (const event of events) {
+      console.log(`- ${event.type}: ${event.path}`);
+    }
+
+    if (Math.random() < 10) return;
+
+    for (const event of events) {
+      const relativePath = path.relative(WATCH_DIR, event.path);
+      const timestamp = new Date().toLocaleTimeString();
+      console.log(
+        "\n-------------------------" + timestamp + "-------------------------"
+      );
+      console.log(`File change detected: ${relativePath}`);
+      console.log(`Event type: ${event.type}`);
+
+      if (!relativePath.endsWith(".md")) continue;
+      if (event.type === "delete") continue;
+
+      setTimeout(() => {
+        fs.readFile(
+          event.path,
+          "utf8",
+          (err: NodeJS.ErrnoException | null, data: string) => {
+            if (err) {
+              console.error("Read error:", err.message);
+              return;
+            }
+
+            try {
+              const { id, content, data: metadata } = parseMarkdown(data);
+              console.log(`[UPDATED] ${relativePath} → Sending update…`);
+              void notifyServer({ id, content, metadata });
+            } catch (e) {
+              if (e instanceof Error) {
+                console.error(`Error parsing ${relativePath}:`, e.message);
+              } else {
+                console.error(`Unknown error parsing ${relativePath}:`, e);
+              }
             }
           }
-        }
-      );
-    }, 150);
-  }
-);
-
-console.log(`Watching directory: ${WATCH_DIR}`);
+        );
+      }, 150);
+    }
+  },
+  { ignore: ["**/.git/**", "**/node_modules/**"] }
+)
+  .then(() => console.log("Watcher ready."))
+  .catch((err) => console.error("Failed to start watcher:", err));
