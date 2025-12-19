@@ -338,18 +338,6 @@ export type PublicApiType = {
       any
     >;
   };
-  tags: {
-    list: FunctionReference<"query", "public", Record<string, never>, any>;
-    get: FunctionReference<"query", "public", { id: Id<"tags"> }, any>;
-    create: FunctionReference<"mutation", "public", { name: string }, any>;
-    update: FunctionReference<
-      "mutation",
-      "public",
-      { id: Id<"tags">; name: string },
-      any
-    >;
-    destroy: FunctionReference<"mutation", "public", { id: Id<"tags"> }, any>;
-  };
   topics: {
     listByCourseSlug: FunctionReference<
       "query",
@@ -374,13 +362,23 @@ export type PublicApiType = {
     create: FunctionReference<
       "mutation",
       "public",
-      { courseId: Id<"courses">; name: string; tagId?: Id<"tags"> },
+      {
+        admintoolToken?: string;
+        courseId: Id<"courses">;
+        name: string;
+        order?: number;
+      },
       any
     >;
     update: FunctionReference<
       "mutation",
       "public",
-      { id: Id<"topics">; name: string; tagId?: Id<"tags"> },
+      {
+        admintoolToken?: string;
+        id: Id<"topics">;
+        name: string;
+        order?: number;
+      },
       any
     >;
     destroy: FunctionReference<"mutation", "public", { id: Id<"topics"> }, any>;
