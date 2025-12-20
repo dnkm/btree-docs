@@ -385,7 +385,7 @@ export type PublicApiType = {
     reorder: FunctionReference<
       "mutation",
       "public",
-      { topicIds: Array<Id<"topics">> },
+      { admintoolToken?: string; topicIds: Array<Id<"topics">> },
       any
     >;
   };

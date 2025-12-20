@@ -263,12 +263,12 @@ async function onTopicRenamed(events: Event[]) {
   const createEvent = events.find((e) => e.type === "create")!;
   const oldPath = deleteEvent.path;
   const newPath = createEvent.path;
-  const { courseId, courseSlug } = parseCourseFolderName(
-    path.relative(WATCH_DIR, newPath).split(path.sep)[0]
-  );
+  // const { courseId, courseSlug } = parseCourseFolderName(
+  //   path.relative(WATCH_DIR, newPath).split(path.sep)[0]
+  // );
   const {
     topicOrder: olderTopicOrder,
-    topicSlug: olderTopicSlug,
+    topicSlug: oldTopicSlug,
     topicId,
   } = parseTopicFolderName(
     path.relative(WATCH_DIR, oldPath).split(path.sep)[1]
@@ -279,15 +279,79 @@ async function onTopicRenamed(events: Event[]) {
 
   isProcessing = true;
 
-  await convex.mutation(api.topics.update, {
-    id: topicId! as GenericId<"topics">,
-    name: newTopicSlug.replace(/-/g, " "),
-    order: newTopicOrder,
-    admintoolToken,
-  });
-  console.log(
-    `→ Renamed topic in Convex: ${topicId} (${olderTopicSlug} → ${newTopicSlug})`
-  );
+  // if order changed, shift sibling folders and sync Convex
+  if (newTopicOrder !== olderTopicOrder) {
+    const courseRelative = path.relative(WATCH_DIR, newPath).split(path.sep)[0];
+    const courseDirPath = path.join(WATCH_DIR, courseRelative);
+
+    // collect topic directories under the course
+    const dirEntries = fs
+      .readdirSync(courseDirPath, { withFileTypes: true })
+      .filter((d) => d.isDirectory());
+
+    type TopicEntry = {
+      dirName: string;
+      dirPath: string;
+      topicOrder: number;
+      topicSlug: string;
+      topicId: string | null;
+    };
+
+    const topics: TopicEntry[] = dirEntries
+      .map((d) => {
+        const parsed = parseTopicFolderName(d.name);
+        return {
+          dirName: d.name,
+          dirPath: path.join(courseDirPath, d.name),
+          topicOrder:
+            parsed.topicId === topicId
+              ? newTopicOrder - 0.1
+              : parsed.topicOrder, // -0.1 gives it a priority to be sorted earlier
+          topicSlug:
+            parsed.topicId === topicId ? newTopicSlug : parsed.topicSlug,
+          topicId: parsed.topicId,
+        } as TopicEntry;
+      })
+      .filter((t) => !Number.isNaN(t.topicOrder) && t.topicId);
+
+    // sort by current order
+    topics.sort((a, b) => a.topicOrder - b.topicOrder);
+
+    // update folder names
+    topics.forEach((t, idx) => {
+      t.topicOrder = idx + 1;
+      const newName = `${t.topicOrder < 10 ? "0" : ""}${t.topicOrder}-${
+        t.topicSlug
+      }-${t.topicId}`;
+      const finalPath = path.join(courseDirPath, newName);
+      try {
+        fs.renameSync(t.dirPath, finalPath);
+        // t.dirPath = finalPath;
+      } catch (err) {
+        const e = err as Error;
+        console.error(
+          `Failed final rename for ${t.dirName} → ${newName}: ${e.message}`
+        );
+      }
+    });
+
+    // sync Convex
+    await convex.mutation(api.topics.reorder, {
+      topicIds: topics.map((t) => t.topicId! as GenericId<"topics">),
+      admintoolToken,
+    });
+  }
+
+  // update slug if changed
+  if (newTopicSlug !== oldTopicSlug) {
+    await convex.mutation(api.topics.update, {
+      id: topicId! as GenericId<"topics">,
+      name: newTopicSlug.replace(/-/g, " "),
+      admintoolToken,
+    });
+  }
+
+  // wait a bit
   await new Promise((resolve) => setTimeout(resolve, 500));
 
   isProcessing = false;
